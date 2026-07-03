@@ -28,7 +28,7 @@
 
 </head>
 
-<body class="font-[Inter] min-h-screen bg-gradient-to-b from-white via-[#F7F8FC] to-[#F4F5F8]">
+<body class="booth-page font-[Inter] min-h-screen bg-gradient-to-b from-white via-[#F7F8FC] to-[#F4F5F8]">
 
     <!-- Background Glow -->
 
@@ -47,7 +47,7 @@
     <!-- Navbar -->
 
     <nav
-        class="max-w-7xl mx-auto flex justify-between items-center px-8 py-8">
+        class="booth-nav max-w-7xl mx-auto flex justify-between items-center px-8 py-8">
 
         <a href="index.html"
             class="text-3xl font-bold tracking-tight">
@@ -79,10 +79,10 @@
     <!-- Main -->
 
     <main
-        class="max-w-7xl mx-auto px-8 pb-20">
+        class="booth-main max-w-7xl mx-auto px-8 pb-20">
 
         <div
-            class="grid lg:grid-cols-[340px_1fr] gap-16">
+            class="booth-layout grid lg:grid-cols-[340px_1fr] gap-16">
 
             <!-- LEFT SIDE -->
 
@@ -97,7 +97,7 @@
                 <!-- Film Strip -->
 
                 <div
-                    class="w-[320px] mx-auto bg-black rounded-[30px] border border-zinc-800 shadow-[0_25px_60px_rgba(0,0,0,.45)] overflow-hidden">
+                    class="photo-strip w-[320px] mx-auto bg-black rounded-[30px] border border-zinc-800 shadow-[0_25px_60px_rgba(0,0,0,.45)] overflow-hidden">
                                         <!-- ========================= -->
                     <!-- FRAME 1 (LIVE) -->
                     <!-- ========================= -->
@@ -443,11 +443,19 @@
 
             <section>
 
-                <div class="bg-white rounded-[32px] shadow-xl p-8 sticky top-8">
+                <div class="settings-panel bg-white rounded-[32px] shadow-xl p-8 sticky top-8">
 
-                    <h2 class="text-3xl font-bold mb-8">
-                        Settings
-                    </h2>
+                    <div class="settings-header">
+
+                        <h2 class="text-3xl font-bold">
+                            Settings
+                        </h2>
+
+                        <span class="settings-pill">
+                            Live
+                        </span>
+
+                    </div>
 
                     <!-- Theme -->
 
@@ -460,6 +468,7 @@
                         <div class="grid grid-cols-2 gap-3">
 
                             <button id="themeMinimal"
+                                aria-label="Use Minimal theme"
                                 class="theme-btn rounded-2xl border-2 border-blue-500 bg-blue-50 py-4 transition">
 
                                 ✨ Minimal
@@ -467,24 +476,62 @@
                             </button>
 
                             <button id="themePastel"
+                                aria-label="Use Classic theme"
                                 class="theme-btn rounded-2xl border py-4 transition hover:bg-zinc-50">
 
-                                🌸 Pastel
+                                Classic
 
                             </button>
 
                             <button id="themeVintage"
+                                aria-label="Use Retro theme"
                                 class="theme-btn rounded-2xl border py-4 transition hover:bg-zinc-50">
 
-                                📼 Vintage
+                                Retro
 
                             </button>
 
                             <button id="themeDark"
+                                aria-label="Use Neon theme"
                                 class="theme-btn rounded-2xl border py-4 transition hover:bg-zinc-50">
 
-                                🌙 Dark
+                                Neon
 
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Experience -->
+
+                    <div class="mb-8">
+
+                        <h3 class="text-lg font-semibold mb-3">
+                            Experience
+                        </h3>
+
+                        <div class="setting-switches">
+
+                            <button id="toggleFlash"
+                                type="button"
+                                aria-pressed="true"
+                                class="setting-toggle is-on">
+                                Flash
+                            </button>
+
+                            <button id="toggleSound"
+                                type="button"
+                                aria-pressed="true"
+                                class="setting-toggle is-on">
+                                Sound
+                            </button>
+
+                            <button id="toggleMirror"
+                                type="button"
+                                aria-pressed="true"
+                                class="setting-toggle is-on">
+                                Mirror
                             </button>
 
                         </div>
@@ -613,9 +660,12 @@
                     <!-- Start -->
 
                     <button id="startSession"
+                        aria-label="Make memory"
                         class="w-full rounded-2xl bg-gradient-to-r from-[#007AFF] to-[#6A5CFF] py-5 text-lg font-semibold text-white shadow-xl transition hover:scale-[1.02]">
 
-                        ✨ Start Memories
+                        <span class="button-icon">★</span>
+                        <span>Make Memory</span>
+                        <span class="button-loader" aria-hidden="true"></span>
 
                     </button>
 
@@ -643,7 +693,7 @@
 
     <div
         id="countdownOverlay"
-        class="fixed inset-0 hidden items-center justify-center bg-black/75 backdrop-blur-sm z-50">
+        class="countdown-overlay fixed inset-0 hidden items-center justify-center bg-black/75 backdrop-blur-sm z-50">
 
         <h1
             id="countdownNumber"
@@ -661,7 +711,7 @@
 
     <div
         id="cameraFlash"
-        class="fixed inset-0 bg-white opacity-0 pointer-events-none z-[60] transition-opacity duration-150">
+        class="camera-flash fixed inset-0 bg-white opacity-0 pointer-events-none z-[60] transition-opacity duration-150">
     </div>
 
     <!-- ========================= -->
@@ -670,7 +720,7 @@
 
     <div
         id="loadingOverlay"
-        class="fixed inset-0 hidden items-center justify-center bg-white/80 backdrop-blur-md z-40">
+        class="loading-overlay fixed inset-0 hidden items-center justify-center bg-white/80 backdrop-blur-md z-40">
 
         <div class="text-center">
 

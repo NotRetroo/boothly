@@ -22,6 +22,11 @@ function readSession() {
 
 function request(event, payload) {
     return new Promise((resolve) => {
+        if (payload === undefined) {
+            socket.emit(event, resolve);
+            return;
+        }
+
         socket.emit(event, payload, resolve);
     });
 }
@@ -124,6 +129,72 @@ async function requestStartSession() {
     }
 }
 
+function markSelected(buttons, selectedButton) {
+    buttons.forEach((button) => {
+        button.classList.remove("border-2", "border-blue-500", "bg-blue-50");
+        button.classList.add("border");
+    });
+
+    selectedButton.classList.add("border-2", "border-blue-500", "bg-blue-50");
+}
+
+function bindSettingGroup(options, settingName, valueMapper) {
+    const buttons = options
+        .map((option) => document.getElementById(option.id))
+        .filter(Boolean);
+
+    options.forEach((option) => {
+        const button = document.getElementById(option.id);
+
+        if (!button) return;
+
+        button.addEventListener("click", async () => {
+            markSelected(buttons, button);
+
+            if (!session.authenticated || session.role !== "host") return;
+
+            const response = await request("session:update-settings", {
+                settings: {
+                    [settingName]: valueMapper(option.value)
+                }
+            });
+
+            if (!response?.ok) {
+                alert(response?.error || "Could not update settings.");
+            }
+        });
+    });
+}
+
+function bindSettingsControls() {
+    bindSettingGroup([
+        { id: "themeMinimal", value: "minimal" },
+        { id: "themePastel", value: "pastel" },
+        { id: "themeVintage", value: "vintage" },
+        { id: "themeDark", value: "dark" }
+    ], "theme", String);
+
+    bindSettingGroup([
+        { id: "filterNormal", value: "normal" },
+        { id: "filterBW", value: "bw" },
+        { id: "filterSepia", value: "sepia" },
+        { id: "filterVintage", value: "vintage" }
+    ], "filter", String);
+
+    bindSettingGroup([
+        { id: "photos2", value: 2 },
+        { id: "photos4", value: 4 },
+        { id: "photos6", value: 6 },
+        { id: "photos8", value: 8 }
+    ], "photoCount", Number);
+
+    bindSettingGroup([
+        { id: "count3", value: 3000 },
+        { id: "count5", value: 5000 },
+        { id: "count10", value: 10000 }
+    ], "countdownMs", Number);
+}
+
 socket.on("connect", authenticate);
 
 socket.on("room:state", updateState);
@@ -184,3 +255,5 @@ if (startSessionButton) {
     setStartEnabled(false);
     startSessionButton.addEventListener("click", requestStartSession);
 }
+
+bindSettingsControls();

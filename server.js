@@ -275,6 +275,7 @@ io.on("connection", (socket) => {
 
         rooms.set(code, room);
         scheduleExpiry(room);
+        socket.join(code);
 
         console.log("[server] room:create success", {
             room: code,
@@ -312,6 +313,7 @@ io.on("connection", (socket) => {
         const guest = createParticipant("guest", displayName);
         room.guest = guest;
         room.status = "paired";
+        socket.join(room.code);
 
         console.log("[server] room:join success", {
             room: room.code,

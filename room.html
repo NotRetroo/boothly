@@ -115,6 +115,42 @@
 
             </div>
 
+            <div id="waitingRoom"
+                class="hidden mt-8 rounded-[28px] border border-blue-200 bg-gradient-to-b from-blue-50 to-white p-6 text-center shadow-lg">
+
+                <p class="text-sm font-semibold uppercase tracking-widest text-blue-500">
+                    Room Code
+                </p>
+
+                <div id="waitingCode"
+                    class="mt-3 break-words text-4xl font-black tracking-widest text-[#007AFF]">
+                </div>
+
+                <p id="waitingMessage" class="mt-4 text-gray-500">
+                    Waiting for your friend...
+                </p>
+
+                <div class="mt-6 grid grid-cols-2 gap-3">
+
+                    <button id="copyCodeBtn"
+                        class="rounded-full border border-blue-200 bg-white px-5 py-3 font-semibold text-[#007AFF] transition hover:shadow">
+                        Copy
+                    </button>
+
+                    <button id="shareRoomBtn"
+                        class="rounded-full bg-[#007AFF] px-5 py-3 font-semibold text-white transition hover:shadow-xl">
+                        Share
+                    </button>
+
+                </div>
+
+                <div id="friendConnected"
+                    class="mt-6 hidden rounded-2xl bg-green-100 px-5 py-4 font-semibold text-green-700">
+                    Friend Connected
+                </div>
+
+            </div>
+
         </div>
 
     </div>
