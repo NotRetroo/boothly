@@ -669,6 +669,15 @@
 
                     </button>
 
+                    <button id="downloadBtn"
+                        type="button"
+                        aria-label="Download photo strip"
+                        disabled
+                        class="mt-4 w-full rounded-2xl border border-gray-200 bg-white py-4 text-lg font-semibold text-[#1D1D1F] shadow transition-opacity opacity-50 cursor-not-allowed flex items-center justify-center gap-3">
+                        <span id="downloadBtnLabel">Download</span>
+                        <span id="downloadBtnLoader" class="hidden inline-block h-4 w-4 animate-spin rounded-full border-2 border-blue-500 border-t-transparent"></span>
+                    </button>
+
                 </div>
 
             </section>
@@ -755,6 +764,8 @@
 <script src="js/camera.js"></script>
 
 <script src="js/webrtc.js"></script>
+
+<script src="js/download.js"></script>
 
 <script src="js/socket.js"></script>
 

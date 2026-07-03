@@ -10,6 +10,7 @@ const session = {
 };
 
 const startSessionButton = document.getElementById("startSession");
+const downloadButton = document.getElementById("downloadBtn");
 
 function readSession() {
     const params = new URLSearchParams(window.location.search);
@@ -46,6 +47,13 @@ function updateState(state) {
     const canStart = isHost && (state.status === "ready" || state.status === "completed");
 
     setStartEnabled(canStart);
+
+    if (downloadButton) {
+        const enabled = state.status === "completed";
+        downloadButton.disabled = !enabled;
+        downloadButton.classList.toggle("opacity-50", !enabled);
+        downloadButton.classList.toggle("cursor-not-allowed", !enabled);
+    }
 }
 
 async function authenticate() {
@@ -254,6 +262,15 @@ socket.on("session:countdown", ({ shotIndex, captureAt }) => {
 if (startSessionButton) {
     setStartEnabled(false);
     startSessionButton.addEventListener("click", requestStartSession);
+}
+
+if (downloadButton) {
+    downloadButton.addEventListener("click", async () => {
+        if (downloadButton.disabled) return;
+        if (window.BoothlyDownloader && typeof window.BoothlyDownloader.downloadPhotoStrip === "function") {
+            await window.BoothlyDownloader.downloadPhotoStrip();
+        }
+    });
 }
 
 bindSettingsControls();
