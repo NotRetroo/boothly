@@ -17,131 +17,177 @@
         crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
+
+    <style>
+        body {
+            background:
+                radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.95), transparent 30%),
+                radial-gradient(circle at 82% 8%, rgba(219, 234, 254, 0.75), transparent 28%),
+                linear-gradient(135deg, #f8fafc 0%, #eef2f7 52%, #f8fafc 100%);
+        }
+
+        .preview-shell {
+            background: rgba(255, 255, 255, 0.82);
+            border-radius: 28px;
+            box-shadow: 0 32px 80px rgba(15, 23, 42, 0.14);
+        }
+
+        .strip-stage {
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(248, 250, 252, 0.94)),
+                repeating-linear-gradient(90deg, rgba(148, 163, 184, 0.12) 0 1px, transparent 1px 12px);
+            border-radius: 22px;
+            min-height: 420px;
+        }
+
+        .preview-canvas {
+            border-radius: 26px;
+            max-height: min(68vh, 720px);
+            box-shadow: 0 25px 50px rgba(15, 23, 42, 0.2);
+        }
+
+        .controls-panel {
+            background: rgba(255, 255, 255, 0.88);
+            border-radius: 28px;
+        }
+
+        .option-card:has(input:checked) {
+            border-color: #172554;
+            background: #eff6ff;
+            color: #172554;
+            box-shadow: inset 0 0 0 1px rgba(23, 37, 84, 0.12);
+        }
+    </style>
 </head>
 
-<body class="min-h-screen bg-[#F6F7FB] font-[Inter] text-[#111827]">
-    <main class="mx-auto grid min-h-screen w-full max-w-7xl gap-8 px-6 py-8 lg:grid-cols-[1fr_360px] lg:px-10">
+<body class="min-h-screen font-[Inter] text-slate-950">
+    <main class="mx-auto grid min-h-screen w-full max-w-7xl gap-6 px-5 py-6 sm:px-8 lg:grid-cols-[1fr_360px] lg:items-start lg:px-10">
         <section class="flex min-h-[70vh] flex-col items-center">
-            <header class="mb-8 text-center">
+            <header class="text-center">
                 <a href="index.html"
-                    class="text-4xl font-black tracking-tight">
+                    class="text-4xl font-black tracking-widest text-slate-950 sm:text-5xl">
                     BOOTHLY
                 </a>
 
-                <h1 class="mt-4 text-2xl font-bold">
+                <p class="mt-4 text-base font-semibold text-slate-500 sm:text-lg">
                     Your memories are ready
-                </h1>
+                </p>
             </header>
 
-            <div class="w-full max-w-4xl rounded-[28px] bg-white p-4 shadow-2xl shadow-slate-200/80">
-                <canvas id="stripPreview"
-                    class="block h-auto w-full rounded-[20px] bg-white">
-                </canvas>
-            </div>
+            <div class="preview-shell mt-6 w-full border border-white/80 p-4 backdrop-blur sm:p-5">
+                <div class="strip-stage flex items-center justify-center border border-slate-200/80 px-4 py-6 sm:px-8">
+                    <canvas id="stripPreview"
+                        class="preview-canvas block h-auto w-auto max-w-full">
+                    </canvas>
+                </div>
 
-            <p id="downloadStatus"
-                class="mt-5 min-h-6 text-center text-sm font-semibold text-zinc-500">
-                Loading preview...
-            </p>
+                <p id="downloadStatus"
+                    class="mt-4 min-h-6 text-center text-sm font-semibold text-slate-500">
+                    Loading preview...
+                </p>
+            </div>
         </section>
 
-        <aside class="self-start rounded-[28px] bg-white p-6 shadow-xl shadow-slate-200/70 lg:sticky lg:top-8">
+        <aside class="controls-panel w-full border border-white/80 p-5 shadow-xl shadow-slate-200/70 backdrop-blur lg:sticky lg:top-6">
             <section>
-                <h2 class="text-lg font-bold">
+                <h2 class="text-sm font-black uppercase tracking-widest text-slate-500">
                     Theme
                 </h2>
 
-                <div class="mt-4 grid gap-3">
-                    <label class="flex items-center gap-3 rounded-2xl border border-zinc-200 px-4 py-3 font-semibold">
+                <div class="mt-3 grid gap-2">
+                    <label class="option-card flex cursor-pointer items-center gap-3 rounded-2xl border border-slate-200 px-4 py-3 text-sm font-bold transition">
                         <input type="radio"
                             name="stripTheme"
                             value="classic"
                             checked
-                            class="h-4 w-4 accent-[#007AFF]">
-                        <span>Classic White</span>
+                            class="h-4 w-4 accent-slate-950">
+                        <span>Classic</span>
                     </label>
 
-                    <label class="flex items-center gap-3 rounded-2xl border border-zinc-200 px-4 py-3 font-semibold">
+                    <label class="option-card flex cursor-pointer items-center gap-3 rounded-2xl border border-slate-200 px-4 py-3 text-sm font-bold transition">
                         <input type="radio"
                             name="stripTheme"
                             value="minimal"
-                            class="h-4 w-4 accent-[#007AFF]">
+                            class="h-4 w-4 accent-slate-950">
                         <span>Minimal</span>
                     </label>
 
-                    <label class="flex items-center gap-3 rounded-2xl border border-zinc-200 px-4 py-3 font-semibold">
+                    <label class="option-card flex cursor-pointer items-center gap-3 rounded-2xl border border-slate-200 px-4 py-3 text-sm font-bold transition">
                         <input type="radio"
                             name="stripTheme"
                             value="vintage"
-                            class="h-4 w-4 accent-[#007AFF]">
+                            class="h-4 w-4 accent-slate-950">
                         <span>Vintage</span>
                     </label>
 
-                    <label class="flex items-center gap-3 rounded-2xl border border-zinc-200 px-4 py-3 font-semibold">
+                    <label class="option-card flex cursor-pointer items-center gap-3 rounded-2xl border border-slate-200 px-4 py-3 text-sm font-bold transition">
                         <input type="radio"
                             name="stripTheme"
                             value="dark"
-                            class="h-4 w-4 accent-[#007AFF]">
+                            class="h-4 w-4 accent-slate-950">
                         <span>Dark</span>
                     </label>
                 </div>
             </section>
 
-            <section class="mt-8">
-                <h2 class="text-lg font-bold">
+            <section class="mt-6">
+                <h2 class="text-sm font-black uppercase tracking-widest text-slate-500">
                     Format
                 </h2>
 
-                <div class="mt-4 grid grid-cols-2 gap-3">
-                    <label class="flex items-center justify-center gap-2 rounded-2xl border border-zinc-200 px-4 py-3 font-semibold">
+                <div class="mt-3 grid grid-cols-2 gap-2">
+                    <label class="option-card flex cursor-pointer items-center justify-center gap-2 rounded-2xl border border-slate-200 px-4 py-3 text-sm font-bold transition">
                         <input type="radio"
                             name="stripFormat"
                             value="png"
                             checked
-                            class="h-4 w-4 accent-[#007AFF]">
+                            class="h-4 w-4 accent-slate-950">
                         <span>PNG</span>
                     </label>
 
-                    <label class="flex items-center justify-center gap-2 rounded-2xl border border-zinc-200 px-4 py-3 font-semibold">
+                    <label class="option-card flex cursor-pointer items-center justify-center gap-2 rounded-2xl border border-slate-200 px-4 py-3 text-sm font-bold transition">
                         <input type="radio"
                             name="stripFormat"
                             value="jpeg"
-                            class="h-4 w-4 accent-[#007AFF]">
+                            class="h-4 w-4 accent-slate-950">
                         <span>JPEG</span>
                     </label>
                 </div>
             </section>
 
-            <section class="mt-8">
-                <h2 class="text-lg font-bold">
+            <section class="mt-6">
+                <h2 class="text-sm font-black uppercase tracking-widest text-slate-500">
                     Quality
                 </h2>
 
-                <div class="mt-4 grid grid-cols-2 gap-3">
-                    <label class="flex items-center justify-center gap-2 rounded-2xl border border-zinc-200 px-4 py-3 font-semibold">
+                <div class="mt-3 grid grid-cols-2 gap-2">
+                    <label class="option-card flex cursor-pointer items-center justify-center gap-2 rounded-2xl border border-slate-200 px-4 py-3 text-sm font-bold transition">
                         <input type="radio"
                             name="stripQuality"
                             value="high"
                             checked
-                            class="h-4 w-4 accent-[#007AFF]">
+                            class="h-4 w-4 accent-slate-950">
                         <span>High</span>
                     </label>
 
-                    <label class="flex items-center justify-center gap-2 rounded-2xl border border-zinc-200 px-4 py-3 font-semibold">
+                    <label class="option-card flex cursor-pointer items-center justify-center gap-2 rounded-2xl border border-slate-200 px-4 py-3 text-sm font-bold transition">
                         <input type="radio"
                             name="stripQuality"
                             value="standard"
-                            class="h-4 w-4 accent-[#007AFF]">
+                            class="h-4 w-4 accent-slate-950">
                         <span>Standard</span>
                     </label>
                 </div>
             </section>
 
-            <button id="downloadPageButton"
-                type="button"
-                class="mt-8 w-full rounded-2xl bg-gradient-to-r from-[#007AFF] to-[#6A5CFF] py-5 text-lg font-bold text-white shadow-xl transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60">
-                Download
-            </button>
+            <button
+    id="downloadPageButton"
+    type="button"
+    style="background: linear-gradient(135deg,#2563eb,#7c3aed); color:white;"
+    class="mt-6 block h-14 w-full rounded-2xl text-base font-bold shadow-xl transition hover:scale-[1.02] hover:shadow-2xl disabled:cursor-not-allowed disabled:opacity-60"
+>
+    ⬇ Download Photo Strip
+</button>
         </aside>
     </main>
 

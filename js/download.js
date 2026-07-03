@@ -8,46 +8,87 @@
 
     const THEMES = {
         classic: {
-            page: "#f6f7fb",
+            page: "#eef3f8",
+            strip: "#fffdf7",
+            text: "#172554",
+            muted: "#52647a",
+            border: "#172554",
+            frame: "#ffffff",
+            accent: "#ef5da8",
+            accentAlt: "#fbbf24",
+            decoration: "#2563eb",
+            shadow: "rgba(15,23,42,0.20)"
+        },
+        minimal: {
+            page: "#f8fafc",
             strip: "#ffffff",
             text: "#111827",
             muted: "#64748b",
-            border: "#d7dce5",
+            border: "#334155",
             frame: "#ffffff",
-            divider: "#e5e7eb",
-            shadow: "rgba(15,23,42,0.18)"
-        },
-        minimal: {
-            page: "#ffffff",
-            strip: "#ffffff",
-            text: "#18181b",
-            muted: "#71717a",
-            border: "#e4e4e7",
-            frame: "#fafafa",
-            divider: "#eeeeee",
-            shadow: "rgba(24,24,27,0.1)"
+            accent: "#0f766e",
+            accentAlt: "#94a3b8",
+            decoration: "#475569",
+            shadow: "rgba(15,23,42,0.14)"
         },
         vintage: {
-            page: "#f3ead7",
-            strip: "#fff8e7",
-            text: "#3b2f2f",
-            muted: "#806b57",
-            border: "#d4b98d",
-            frame: "#fffdf4",
-            divider: "#dec99e",
-            shadow: "rgba(92,64,51,0.18)"
+            page: "#efe3cf",
+            strip: "#fff7df",
+            text: "#3f2f23",
+            muted: "#8a6b4f",
+            border: "#744f2b",
+            frame: "#fffaf0",
+            accent: "#b45309",
+            accentAlt: "#d97706",
+            decoration: "#7c2d12",
+            shadow: "rgba(92,64,51,0.22)"
         },
         dark: {
-            page: "#111827",
-            strip: "#171717",
+            page: "#0f172a",
+            strip: "#111827",
             text: "#f8fafc",
             muted: "#cbd5e1",
-            border: "#3f3f46",
-            frame: "#0f172a",
-            divider: "#334155",
-            shadow: "rgba(0,0,0,0.4)"
+            border: "#93c5fd",
+            frame: "#020617",
+            accent: "#f472b6",
+            accentAlt: "#fde68a",
+            decoration: "#bfdbfe",
+            shadow: "rgba(0,0,0,0.42)"
         }
     };
+
+    const LAYOUT = {
+
+    // Canvas size
+    width: 920,
+    height: 2450,
+
+    // Paper margins
+    outerMargin: 36,
+    innerPadding: 52,
+
+    // Header
+    headerHeight: 250,
+
+    // Photos
+    photoWidth: 710,
+    photoHeight: 285,
+    photoGap: 34,
+
+    // Rounded corners
+    frameRadius: 24,
+    stripRadius: 34,
+
+    // Footer
+    footerHeight: 330,
+
+    // Shadows
+    shadowBlur: 30,
+    shadowOffset: 10,
+
+    // Decorative spacing
+    decorationMargin: 26
+};
 
     function openCapturesDb() {
         return new Promise((resolve, reject) => {
@@ -260,7 +301,7 @@
         ctx.closePath();
     }
 
-    function drawCroppedImage(ctx, image, x, y, width, height, radius) {
+    function drawCroppedImage(ctx, image, x, y, width, height) {
         const sourceRatio = image.width / image.height;
         const targetRatio = width / height;
         let sx = 0;
@@ -276,192 +317,400 @@
             sy = (image.height - sh) / 2;
         }
 
-        ctx.save();
-        drawRoundedRect(ctx, x, y, width, height, radius);
-        ctx.clip();
         ctx.drawImage(image, sx, sy, sw, sh, x, y, width, height);
-        ctx.restore();
     }
 
-    function stripMetrics(pairs, quality) {
-        const baseWidth = Math.max(...pairs.map((pair) => Math.max(pair.my.width, pair.friend.width)));
-        const baseHeight = Math.max(...pairs.map((pair) => Math.max(pair.my.height, pair.friend.height)));
-        const scale = quality === "standard" ? 0.5 : 1;
-        const photoWidth = Math.max(1, Math.round(baseWidth * scale));
-        const photoHeight = Math.max(1, Math.round(baseHeight * scale));
-        const columnGap = Math.max(36, Math.round(photoWidth * 0.045));
-        const rowGap = Math.max(34, Math.round(photoHeight * 0.052));
-        const padding = Math.max(76, Math.round(photoWidth * 0.08));
-        const headerHeight = Math.max(190, Math.round(photoHeight * 0.24));
-        const labelHeight = Math.max(74, Math.round(photoHeight * 0.1));
-        const footerHeight = Math.max(150, Math.round(photoHeight * 0.2));
-        const width = padding * 2 + photoWidth * 2 + columnGap;
-        const height = headerHeight + labelHeight + photoHeight * PHOTO_COUNT + rowGap * (PHOTO_COUNT - 1) + footerHeight;
+function createStripLayout(pairs, quality) {
 
-        return {
-            width,
-            height,
-            photoWidth,
-            photoHeight,
-            columnGap,
-            rowGap,
-            padding,
-            headerHeight,
-            labelHeight,
-            footerHeight,
-            radius: Math.max(22, Math.round(photoWidth * 0.035))
-        };
-    }
+    const scale = quality === "standard" ? 0.5 : 1;
 
-    function drawHeader(ctx, metrics, theme) {
-        const titleSize = Math.max(54, Math.round(metrics.photoWidth * 0.08));
-        const subtitleSize = Math.max(28, Math.round(metrics.photoWidth * 0.042));
+    const singleWidth =
+        Math.round(
+            Math.max(
+                ...pairs.map(pair => Math.max(pair.my.width, pair.friend.width))
+            ) * scale
+        );
 
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillStyle = theme.text;
-        ctx.font = `800 ${titleSize}px Inter, system-ui, sans-serif`;
-        ctx.fillText("BOOTHLY", metrics.width / 2, metrics.headerHeight * 0.38);
+    const singleHeight =
+        Math.round(
+            Math.max(
+                ...pairs.map(pair => Math.max(pair.my.height, pair.friend.height))
+            ) * scale
+        );
 
-        ctx.fillStyle = theme.muted;
-        ctx.font = `500 ${subtitleSize}px Inter, system-ui, sans-serif`;
-        ctx.fillText("Memories Together", metrics.width / 2, metrics.headerHeight * 0.66);
+    const photoWidth = singleWidth * 2;
 
-        ctx.strokeStyle = theme.border;
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(metrics.padding, metrics.headerHeight - 22);
-        ctx.lineTo(metrics.width - metrics.padding, metrics.headerHeight - 22);
-        ctx.stroke();
-    }
+    const photoHeight =
+        Math.round(
+            photoWidth * 0.52
+        );
 
-    function drawLabels(ctx, metrics, theme, leftX, rightX) {
-        const labelHeight = Math.max(48, Math.round(metrics.labelHeight * 0.65));
-        const labelTop = metrics.headerHeight + 4;
-        const labelSize = Math.max(22, Math.round(metrics.photoWidth * 0.034));
+    return {
 
-        ctx.fillStyle = theme.text;
-        ctx.font = `700 ${labelSize}px Inter, system-ui, sans-serif`;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
+        width: photoWidth + LAYOUT.innerPadding * 2,
 
-        [leftX, rightX].forEach((x) => {
+        height:
+            LAYOUT.headerHeight +
+            LAYOUT.footerHeight +
+            photoHeight * 4 +
+            LAYOUT.photoGap * 3,
+
+        padding: LAYOUT.innerPadding,
+
+        headerHeight: LAYOUT.headerHeight,
+
+        footerHeight: LAYOUT.footerHeight,
+
+        photoWidth,
+
+        photoHeight,
+
+        singlePhotoWidth: singleWidth,
+
+        photoGap: LAYOUT.photoGap,
+
+        photoTop: LAYOUT.headerHeight,
+
+        frameInset: 16,
+
+        borderRadius: LAYOUT.frameRadius,
+
+        shadowBlur: LAYOUT.shadowBlur,
+
+        outerBorder: LAYOUT.outerMargin,
+
+        lineWidth: 3
+    };
+
+}
+
+    const DECORATIONS = [
+        { type: "sparkle", x: 0.12, y: 0.07, size: 0.032, color: "accentAlt" },
+        { type: "heart", x: 0.88, y: 0.075, size: 0.036, color: "accent" },
+        { type: "star", x: 0.16, y: 0.18, size: 0.025, color: "decoration" },
+        { type: "dot", x: 0.84, y: 0.19, size: 0.014, color: "accentAlt" },
+        { type: "squiggle", x: 0.1, y: 0.91, size: 0.05, color: "decoration" },
+        { type: "heart", x: 0.86, y: 0.9, size: 0.027, color: "accent" },
+        { type: "dot", x: 0.18, y: 0.96, size: 0.012, color: "accent" },
+        { type: "star", x: 0.78, y: 0.955, size: 0.021, color: "accentAlt" }
+    ];
+
+    class StripRenderer {
+        constructor(canvas, pairs, options, createdAt) {
+            this.canvas = canvas;
+            this.pairs = pairs;
+            this.theme = THEMES[options.theme] || THEMES.classic;
+            this.layout = createStripLayout(pairs, options.quality);
+            this.createdAt = createdAt;
+        }
+
+        // Base paper and surrounding page color.
+        drawBackground() {
+            const { ctx, layout, theme } = this;
+
+            ctx.fillStyle = theme.page;
+            ctx.fillRect(0, 0, layout.width, layout.height);
+
+            ctx.save();
+            ctx.shadowColor = theme.shadow;
+            ctx.shadowBlur = layout.shadowBlur;
+            ctx.shadowOffsetY = Math.round(layout.shadowBlur * 0.44);
+            ctx.fillStyle = theme.strip;
+            drawRoundedRect(
+                ctx,
+                layout.outerBorder,
+                layout.outerBorder,
+                layout.width - layout.outerBorder * 2,
+                layout.height - layout.outerBorder * 2,
+                layout.borderRadius + layout.outerBorder
+            );
+            ctx.fill();
+            ctx.restore();
+        }
+
+        // Thin printed border around the strip.
+        drawOuterBorder() {
+            const { ctx, layout, theme } = this;
+            const borderInset = layout.outerBorder + layout.lineWidth;
+
             ctx.strokeStyle = theme.border;
-            ctx.lineWidth = 2;
-            drawRoundedRect(ctx, x, labelTop, metrics.photoWidth, labelHeight, 16);
+            ctx.lineWidth = layout.lineWidth;
+            drawRoundedRect(
+                ctx,
+                borderInset,
+                borderInset,
+                layout.width - borderInset * 2,
+                layout.height - borderInset * 2,
+                layout.borderRadius
+            );
             ctx.stroke();
-        });
+        }
 
-        ctx.fillText("Me", leftX + metrics.photoWidth / 2, labelTop + labelHeight / 2);
-        ctx.fillText("Friend", rightX + metrics.photoWidth / 2, labelTop + labelHeight / 2);
-    }
+        // Brand lockup at the top of the printed strip.
+       drawHeader() {
 
-    function drawPhotoFrame(ctx, image, x, y, metrics, theme) {
-        ctx.save();
-        ctx.shadowColor = theme.shadow;
-        ctx.shadowBlur = Math.max(14, Math.round(metrics.photoWidth * 0.025));
-        ctx.shadowOffsetY = Math.max(8, Math.round(metrics.photoHeight * 0.015));
-        ctx.fillStyle = theme.frame;
-        drawRoundedRect(ctx, x - 12, y - 12, metrics.photoWidth + 24, metrics.photoHeight + 24, metrics.radius + 6);
-        ctx.fill();
-        ctx.restore();
+    const { ctx, layout, theme } = this;
 
-        drawCroppedImage(ctx, image, x, y, metrics.photoWidth, metrics.photoHeight, metrics.radius);
+    const center = layout.width / 2;
 
-        ctx.strokeStyle = theme.border;
-        ctx.lineWidth = 2;
-        drawRoundedRect(ctx, x, y, metrics.photoWidth, metrics.photoHeight, metrics.radius);
-        ctx.stroke();
-    }
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
 
-    function drawFooter(ctx, metrics, theme, createdAt) {
-        const capturedAt = createdAt ? new Date(createdAt) : new Date();
-        const date = capturedAt.toLocaleDateString(undefined, {
-            year: "numeric",
-            month: "long",
-            day: "numeric"
-        });
-        const time = capturedAt.toLocaleTimeString(undefined, {
-            hour: "2-digit",
-            minute: "2-digit"
-        });
-        const footerSize = Math.max(22, Math.round(metrics.photoWidth * 0.034));
+    ctx.fillStyle = theme.text;
 
-        ctx.strokeStyle = theme.border;
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(metrics.padding, metrics.height - metrics.footerHeight + 8);
-        ctx.lineTo(metrics.width - metrics.padding, metrics.height - metrics.footerHeight + 8);
-        ctx.stroke();
+    ctx.font = "900 70px Inter";
 
-        ctx.fillStyle = theme.muted;
-        ctx.font = `600 ${footerSize}px Inter, system-ui, sans-serif`;
-        ctx.textAlign = "left";
-        ctx.textBaseline = "alphabetic";
-        ctx.fillText(date, metrics.padding, metrics.height - metrics.footerHeight * 0.56);
-        ctx.fillText(time, metrics.padding, metrics.height - metrics.footerHeight * 0.28);
+    ctx.fillText(
+        "Boothly",
+        center,
+        82
+    );
 
-        ctx.textAlign = "right";
-        ctx.fillStyle = theme.text;
-        ctx.fillText("Made with Boothly", metrics.width - metrics.padding - footerSize * 1.55, metrics.height - metrics.footerHeight * 0.28);
+    ctx.font = "600 24px Inter";
 
-        ctx.save();
-        ctx.translate(metrics.width - metrics.padding - footerSize * 0.72, metrics.height - metrics.footerHeight * 0.34);
-        ctx.scale(Math.max(1, footerSize / 22), Math.max(1, footerSize / 22));
-        ctx.fillStyle = "#ef4444";
-        ctx.beginPath();
-        ctx.moveTo(0, 8);
-        ctx.bezierCurveTo(-24, -10, -4, -24, 0, -10);
-        ctx.bezierCurveTo(4, -24, 24, -10, 0, 8);
-        ctx.fill();
-        ctx.restore();
+    ctx.fillStyle = theme.muted;
+
+    ctx.fillText(
+        "Memories Together",
+        center,
+        132
+    );
+
+}
+        // Single rounded frame containing both Boothly captures as one row.
+        drawPhotoFrame(pair, rowIndex) {
+            const { ctx, layout, theme } = this;
+            const x = layout.padding;
+            const y = layout.photoTop + rowIndex * (layout.photoHeight + layout.photoGap);
+            const radius = layout.borderRadius;
+
+            ctx.save();
+            ctx.shadowColor = theme.shadow;
+            ctx.shadowBlur = Math.round(layout.shadowBlur * 0.56);
+            ctx.shadowOffsetY = Math.round(layout.shadowBlur * 0.22);
+            ctx.fillStyle = theme.frame;
+            drawRoundedRect(
+                ctx,
+                x - layout.frameInset,
+                y - layout.frameInset,
+                layout.photoWidth + layout.frameInset * 2,
+                layout.photoHeight + layout.frameInset * 2,
+                radius + layout.frameInset
+            );
+            ctx.fill();
+            ctx.restore();
+
+            ctx.save();
+            drawRoundedRect(ctx, x, y, layout.photoWidth, layout.photoHeight, radius);
+            ctx.clip();
+            drawCroppedImage(ctx, pair.my, x, y, layout.singlePhotoWidth, layout.photoHeight);
+            drawCroppedImage(ctx, pair.friend, x + layout.singlePhotoWidth, y, layout.singlePhotoWidth, layout.photoHeight);
+            ctx.fillStyle = "rgba(255,255,255,0.16)";
+            ctx.fillRect(x + layout.singlePhotoWidth - 1, y, 2, layout.photoHeight);
+            ctx.restore();
+
+            ctx.strokeStyle = theme.border;
+            ctx.lineWidth = layout.lineWidth;
+            drawRoundedRect(ctx, x, y, layout.photoWidth, layout.photoHeight, radius);
+            ctx.stroke();
+        }
+
+        // Small decorative marks, driven by data for easy extension.
+        drawDecorations() {
+            DECORATIONS.forEach((decoration) => {
+                const color = this.theme[decoration.color] || this.theme.decoration;
+                const x = this.layout.width * decoration.x;
+                const y = this.layout.height * decoration.y;
+                const size = this.layout.width * decoration.size;
+
+                if (decoration.type === "heart") this.drawHeart(x, y, size, color);
+                if (decoration.type === "star") this.drawStar(x, y, size, color);
+                if (decoration.type === "sparkle") this.drawSparkle(x, y, size, color);
+                if (decoration.type === "squiggle") this.drawSquiggle(x, y, size, color);
+                if (decoration.type === "dot") this.drawDot(x, y, size, color);
+            });
+        }
+
+        // Keepsake text and capture timestamp.
+        drawFooter() {
+    const { ctx, layout, theme } = this;
+
+    const capturedAt = this.createdAt
+        ? new Date(this.createdAt)
+        : new Date();
+
+    const date = capturedAt.toLocaleDateString(undefined, {
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+    });
+
+    const time = capturedAt.toLocaleTimeString(undefined, {
+        hour: "2-digit",
+        minute: "2-digit"
+    });
+
+    const footerTop = layout.height - layout.footerHeight;
+
+    // Decorative divider
+    ctx.strokeStyle = theme.accentAlt;
+    ctx.lineWidth = 3;
+
+    ctx.beginPath();
+    ctx.moveTo(100, footerTop + 40);
+    ctx.lineTo(layout.width - 100, footerTop + 40);
+    ctx.stroke();
+
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    // Main title
+    ctx.fillStyle = theme.text;
+    ctx.font = "700 52px Inter";
+    ctx.fillText(
+        "Good times",
+        layout.width / 2,
+        footerTop + 95
+    );
+
+    // Subtitle
+    ctx.fillStyle = theme.accent;
+    ctx.font = "700 30px Inter";
+    ctx.fillText(
+        "Great Memories",
+        layout.width / 2,
+        footerTop + 145
+    );
+
+    // Date
+    ctx.fillStyle = theme.muted;
+    ctx.font = "600 22px Inter";
+    ctx.fillText(
+        date,
+        layout.width / 2,
+        footerTop + 210
+    );
+
+    // Time
+    ctx.fillText(
+        time,
+        layout.width / 2,
+        footerTop + 245
+    );
+
+    // Badge
+    ctx.fillStyle = theme.text;
+    ctx.font = "700 24px Inter";
+    ctx.fillText(
+        "Made with Boothly ❤️",
+        layout.width / 2,
+        footerTop + 295
+    );
+}
+
+        render() {
+            this.canvas.width = this.layout.width;
+            this.canvas.height = this.layout.height;
+            this.ctx = this.canvas.getContext("2d");
+
+            this.drawBackground();
+            this.drawOuterBorder();
+            this.drawHeader();
+            this.pairs.forEach((pair, index) => this.drawPhotoFrame(pair, index));
+            this.drawDecorations();
+            this.drawFooter();
+
+            return this.layout;
+        }
+
+        drawHeart(x, y, size, color) {
+            const { ctx } = this;
+
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.scale(size / 28, size / 28);
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(0, 9);
+            ctx.bezierCurveTo(-26, -10, -4, -25, 0, -10);
+            ctx.bezierCurveTo(4, -25, 26, -10, 0, 9);
+            ctx.fill();
+            ctx.restore();
+        }
+
+        drawStar(x, y, size, color) {
+            const { ctx } = this;
+            const points = 5;
+
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.fillStyle = color;
+            ctx.beginPath();
+
+            for (let index = 0; index < points * 2; index += 1) {
+                const radius = index % 2 === 0 ? size : size * 0.45;
+                const angle = -Math.PI / 2 + index * Math.PI / points;
+                const px = Math.cos(angle) * radius;
+                const py = Math.sin(angle) * radius;
+
+                if (index === 0) ctx.moveTo(px, py);
+                else ctx.lineTo(px, py);
+            }
+
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+        }
+
+        drawSparkle(x, y, size, color) {
+            const { ctx } = this;
+
+            ctx.save();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = Math.max(3, size * 0.12);
+            ctx.lineCap = "round";
+            ctx.beginPath();
+            ctx.moveTo(x - size, y);
+            ctx.lineTo(x + size, y);
+            ctx.moveTo(x, y - size);
+            ctx.lineTo(x, y + size);
+            ctx.moveTo(x - size * 0.55, y - size * 0.55);
+            ctx.lineTo(x + size * 0.55, y + size * 0.55);
+            ctx.moveTo(x + size * 0.55, y - size * 0.55);
+            ctx.lineTo(x - size * 0.55, y + size * 0.55);
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        drawSquiggle(x, y, size, color) {
+            const { ctx } = this;
+
+            ctx.save();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = Math.max(4, size * 0.12);
+            ctx.lineCap = "round";
+            ctx.beginPath();
+            ctx.moveTo(x - size, y);
+            ctx.bezierCurveTo(x - size * 0.5, y - size * 0.65, x, y + size * 0.65, x + size * 0.5, y);
+            ctx.bezierCurveTo(x + size * 0.8, y - size * 0.38, x + size, y - size * 0.18, x + size * 1.18, y);
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        drawDot(x, y, size, color) {
+            const { ctx } = this;
+
+            ctx.save();
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(x, y, size, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        }
     }
 
     function renderStripToCanvas(canvas, pairs, options, createdAt) {
-        const theme = THEMES[options.theme] || THEMES.classic;
-        const metrics = stripMetrics(pairs, options.quality);
-        const leftX = metrics.padding;
-        const rightX = metrics.padding + metrics.photoWidth + metrics.columnGap;
-        let rowY = metrics.headerHeight + metrics.labelHeight;
-
-        canvas.width = metrics.width;
-        canvas.height = metrics.height;
-
-        const ctx = canvas.getContext("2d");
-
-        ctx.fillStyle = theme.page;
-        ctx.fillRect(0, 0, metrics.width, metrics.height);
-
-        ctx.save();
-        ctx.shadowColor = theme.shadow;
-        ctx.shadowBlur = Math.max(36, Math.round(metrics.photoWidth * 0.04));
-        ctx.shadowOffsetY = Math.max(18, Math.round(metrics.photoHeight * 0.025));
-        ctx.fillStyle = theme.strip;
-        drawRoundedRect(ctx, 28, 28, metrics.width - 56, metrics.height - 56, Math.max(42, Math.round(metrics.photoWidth * 0.04)));
-        ctx.fill();
-        ctx.restore();
-
-        drawHeader(ctx, metrics, theme);
-        drawLabels(ctx, metrics, theme, leftX, rightX);
-
-        pairs.forEach((pair, index) => {
-            drawPhotoFrame(ctx, pair.my, leftX, rowY, metrics, theme);
-            drawPhotoFrame(ctx, pair.friend, rightX, rowY, metrics, theme);
-            rowY += metrics.photoHeight + metrics.rowGap;
-
-            if (index < pairs.length - 1) {
-                ctx.strokeStyle = theme.divider;
-                ctx.lineWidth = 1;
-                ctx.beginPath();
-                ctx.moveTo(metrics.padding, rowY - metrics.rowGap / 2);
-                ctx.lineTo(metrics.width - metrics.padding, rowY - metrics.rowGap / 2);
-                ctx.stroke();
-            }
-        });
-
-        drawFooter(ctx, metrics, theme, createdAt);
-
-        return metrics;
+        return new StripRenderer(canvas, pairs, options, createdAt).render();
     }
 
     function createBlob(canvas, format) {

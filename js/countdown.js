@@ -5,20 +5,23 @@ let countdownTimer = null;
 let captureTimer = null;
 
 function clearCountdownTimers() {
-    clearInterval(countdownTimer);
-    clearTimeout(captureTimer);
-    countdownTimer = null;
-    captureTimer = null;
+    if (countdownTimer) {
+        clearInterval(countdownTimer);
+        countdownTimer = null;
+    }
+
+    if (captureTimer) {
+        clearTimeout(captureTimer);
+        captureTimer = null;
+    }
 }
 
 function showCountdown() {
-    overlay.classList.remove("hidden");
-    overlay.classList.add("flex");
+    overlay?.classList.remove("hidden");
 }
 
 function hideCountdown() {
-    overlay.classList.remove("flex");
-    overlay.classList.add("hidden");
+    overlay?.classList.add("hidden");
 }
 
 function runScheduledCountdown({ shotIndex, captureAt, onCapture }) {
@@ -37,12 +40,28 @@ function runScheduledCountdown({ shotIndex, captureAt, onCapture }) {
         clearCountdownTimers();
         hideCountdown();
 
-        if (typeof captureCurrentFrame === "function") {
-            captureCurrentFrame(shotIndex);
-        }
+        console.log("[countdown] Timeout fired", { shotIndex });
 
-        if (typeof onCapture === "function") {
-            onCapture();
+        try {
+            if (typeof captureCurrentFrame === "function") {
+                console.log("[countdown] Before captureCurrentFrame");
+                captureCurrentFrame(shotIndex);
+                console.log("[countdown] After captureCurrentFrame");
+            } else {
+                console.warn("[countdown] captureCurrentFrame is not defined");
+            }
+
+            if (typeof onCapture === "function") {
+                console.log("[countdown] Calling onCapture");
+                onCapture();
+                console.log("[countdown] onCapture finished");
+            } else {
+                console.warn("[countdown] onCapture is not a function");
+            }
+
+            console.log("[countdown] Countdown callback completed");
+        } catch (err) {
+            console.error("[countdown] Error during capture:", err);
         }
     }, Math.max(0, captureAt - Date.now()));
 }
