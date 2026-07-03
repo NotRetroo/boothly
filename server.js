@@ -402,9 +402,7 @@ io.on("connection", (socket) => {
         console.log("[server] client:peer-ready received", {
             socketId: socket.id
         });
-git add .
-git commit -m "Fix Socket.IO acknowledgement"
-git push
+
         const session = getSocketSession(socket);
         if (!session) return ack?.({ ok: false, error: "Not authenticated." });
 
