@@ -25,27 +25,64 @@ const friendPlaceholders = [
 ];
 
 async function ensurePeerConnection() {
+    console.log("[webrtc:ensure] entered", {
+        hasExistingPeerConnection: Boolean(peerConnection),
+        hasWaitForCamera: typeof waitForCamera === "function",
+        hasLocalStream: typeof localStream !== "undefined" && Boolean(localStream)
+    });
+
     if (peerConnection) {
+        console.log("[webrtc:ensure] returning existing peerConnection");
         return peerConnection;
     }
 
     if (typeof waitForCamera === "function") {
+        console.log("[webrtc:ensure] before await waitForCamera()");
         await waitForCamera();
+        console.log("[webrtc:ensure] after await waitForCamera()");
     }
 
+    console.log("[webrtc:ensure] before new RTCPeerConnection()");
     peerConnection = new RTCPeerConnection(rtcConfiguration);
+    console.log("[webrtc:ensure] after new RTCPeerConnection()", peerConnection);
     console.log("[webrtc] RTCPeerConnection created");
 
+    console.log("[webrtc:ensure] before localStream check", {
+        localStreamType: typeof localStream,
+        hasLocalStream: Boolean(localStream)
+    });
+
     if (localStream) {
+        console.log("[webrtc:ensure] inside localStream block");
+
         console.log("[webrtc] adding local tracks", {
             trackCount: localStream.getTracks().length
         });
 
-        localStream.getTracks().forEach((track) => {
+        console.log("[webrtc:ensure] before localStream.getTracks()");
+        const tracks = localStream.getTracks();
+        console.log("[webrtc:ensure] after localStream.getTracks()", {
+            trackCount: tracks.length,
+            tracks
+        });
+
+        tracks.forEach((track, index) => {
+            console.log("[webrtc:ensure] before peerConnection.addTrack()", {
+                index,
+                kind: track.kind,
+                id: track.id,
+                readyState: track.readyState
+            });
+
             peerConnection.addTrack(track, localStream);
+
+            console.log("[webrtc:ensure] after peerConnection.addTrack()", {
+                index
+            });
         });
     }
 
+    console.log("[webrtc:ensure] before assigning ontrack");
     peerConnection.ontrack = (event) => {
         console.log("[webrtc] ontrack fired", event);
 
@@ -58,7 +95,9 @@ async function ensurePeerConnection() {
             friendPlaceholders[index]?.classList.add("hidden");
         });
     };
+    console.log("[webrtc:ensure] after assigning ontrack");
 
+    console.log("[webrtc:ensure] before assigning onicecandidate");
     peerConnection.onicecandidate = (event) => {
         if (!event.candidate) return;
         console.log("[webrtc] ICE sent candidate generated", event.candidate);
@@ -67,13 +106,17 @@ async function ensurePeerConnection() {
             emitIceCandidate(event.candidate);
         }
     };
+    console.log("[webrtc:ensure] after assigning onicecandidate");
 
+    console.log("[webrtc:ensure] before assigning onconnectionstatechange");
     peerConnection.onconnectionstatechange = () => {
         if (peerConnection.connectionState === "failed") {
             peerConnection.restartIce();
         }
     };
+    console.log("[webrtc:ensure] after assigning onconnectionstatechange");
 
+    console.log("[webrtc:ensure] returning new peerConnection");
     return peerConnection;
 }
 
