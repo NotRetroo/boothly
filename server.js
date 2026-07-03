@@ -42,6 +42,10 @@ app.get("/booth.html", (req, res) => {
     res.sendFile(path.join(__dirname, "booth.html"));
 });
 
+app.get("/download.html", (req, res) => {
+    res.sendFile(path.join(__dirname, "download.html"));
+});
+
 function now() {
     return Date.now();
 }
