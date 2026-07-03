@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Boothly</title>
+
+    <link rel="stylesheet"
+        href="css/output.css">
+
+    <link rel="stylesheet"
+        href="css/booth.css">
+
+    <link rel="preconnect"
+        href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+</head>
+
+<body class="font-[Inter] min-h-screen bg-gradient-to-b from-white via-[#F7F8FC] to-[#F4F5F8]">
+
+    <!-- Background Glow -->
+
+    <div class="fixed inset-0 -z-10 overflow-hidden">
+
+        <div
+            class="absolute -left-64 -top-64 w-[520px] h-[520px] rounded-full bg-blue-300/20 blur-[180px]">
+        </div>
+
+        <div
+            class="absolute -right-64 bottom-0 w-[520px] h-[520px] rounded-full bg-pink-300/20 blur-[180px]">
+        </div>
+
+    </div>
+
+    <!-- Navbar -->
+
+    <nav
+        class="max-w-7xl mx-auto flex justify-between items-center px-8 py-8">
+
+        <a href="index.html"
+            class="text-3xl font-bold tracking-tight">
+
+            Boothly
+
+        </a>
+
+        <div class="flex gap-3">
+
+            <div
+                class="px-5 py-2 rounded-full bg-white shadow font-medium">
+
+                ⭐ STAR-CLOUD
+
+            </div>
+
+            <div
+                class="px-5 py-2 rounded-full bg-green-100 text-green-700 font-medium">
+
+                ● Connected
+
+            </div>
+
+        </div>
+
+    </nav>
+
+    <!-- Main -->
+
+    <main
+        class="max-w-7xl mx-auto px-8 pb-20">
+
+        <div
+            class="grid lg:grid-cols-[340px_1fr] gap-16">
+
+            <!-- LEFT SIDE -->
+
+            <section>
+
+                <h2 class="text-3xl font-bold mb-6">
+
+                    Shared Photo Strip
+
+                </h2>
+
+                <!-- Film Strip -->
+
+                <div
+                    class="w-[320px] mx-auto bg-black rounded-[30px] border border-zinc-800 shadow-[0_25px_60px_rgba(0,0,0,.45)] overflow-hidden">
+                                        <!-- ========================= -->
+                    <!-- FRAME 1 (LIVE) -->
+                    <!-- ========================= -->
+
+                    <div class="p-3 border-b border-zinc-800">
+
+                        <!-- Frame Title -->
+
+                        <div class="flex items-center mb-3">
+
+                            <div class="flex-1 h-px bg-zinc-800"></div>
+
+                            <span class="mx-3 text-[11px] tracking-[0.35em] uppercase text-zinc-400">
+
+                                Shared Live
+
+                            </span>
+
+                            <div class="flex-1 h-px bg-zinc-800"></div>
+
+                        </div>
+
+                        <!-- Shared Camera -->
+
+                        <div
+                            class="relative grid grid-cols-2 overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900">
+
+                            <!-- ================= YOU ================= -->
+
+                            <div
+                                class="relative aspect-[4/5] overflow-hidden border-r border-zinc-800">
+
+                                <video
+                                    id="myVideo1"
+                                    autoplay
+                                    playsinline
+                                    muted
+                                    class="absolute inset-0 h-full w-full object-cover hidden">
+                                </video>
+
+                                <canvas
+                                    id="myCanvas1"
+                                    class="absolute inset-0 hidden h-full w-full">
+                                </canvas>
+
+                                <div
+                                    id="myPlaceholder1"
+                                    class="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900">
+
+                                    <span
+                                        class="absolute left-3 top-3 rounded-full bg-black/60 px-2 py-1 text-[10px] font-semibold text-white backdrop-blur">
+
+                                        YOU
+
+                                    </span>
+
+                                    <div class="text-5xl">
+
+                                        📷
+
+                                    </div>
+
+                                    <p class="mt-3 text-sm text-white">
+
+                                        Connecting...
+
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                            <!-- ================= FRIEND ================= -->
+
+                            <div
+                                class="relative aspect-[4/5] overflow-hidden">
+
+                                <video
+                                    id="friendVideo1"
+                                    autoplay
+                                    playsinline
+                                    class="absolute inset-0 h-full w-full object-cover hidden">
+                                </video>
+
+                                <canvas
+                                    id="friendCanvas1"
+                                    class="absolute inset-0 hidden h-full w-full">
+                                </canvas>
+
+                                <div
+                                    id="friendPlaceholder1"
+                                    class="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900">
+
+                                    <span
+                                        class="absolute right-3 top-3 rounded-full bg-black/60 px-2 py-1 text-[10px] font-semibold text-white backdrop-blur">
+
+                                        FRIEND
+
+                                    </span>
+
+                                    <div class="text-5xl">
+
+                                        ❤️
+
+                                    </div>
+
+                                    <p class="mt-3 text-sm text-white">
+
+                                        Waiting...
+
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                                        <!-- ========================= -->
+                    <!-- FRAME 2 -->
+                    <!-- ========================= -->
+
+                    <div class="p-3 border-b border-zinc-800">
+
+                        <div class="relative grid grid-cols-2 overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900">
+
+                            <!-- YOU -->
+
+                            <div class="relative aspect-[4/5] overflow-hidden border-r border-zinc-800">
+
+                                <video id="myVideo2"
+                                    autoplay
+                                    playsinline
+                                    muted
+                                    class="absolute inset-0 w-full h-full object-cover hidden">
+                                </video>
+
+                                <canvas id="myCanvas2"
+                                    class="absolute inset-0 hidden w-full h-full">
+                                </canvas>
+
+                                <div id="myPlaceholder2"
+                                    class="absolute inset-0 flex flex-col items-center justify-center bg-zinc-100">
+
+                                    <div class="text-4xl">📷</div>
+
+                                    <p class="mt-2 text-sm text-zinc-700">
+                                        Waiting
+                                    </p>
+
+                                    <p class="text-xs text-zinc-500">
+                                        for Shot
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                            <!-- FRIEND -->
+
+                            <div class="relative aspect-[4/5] overflow-hidden">
+
+                                <video id="friendVideo2"
+                                    autoplay
+                                    playsinline
+                                    class="absolute inset-0 w-full h-full object-cover hidden">
+                                </video>
+
+                                <canvas id="friendCanvas2"
+                                    class="absolute inset-0 hidden w-full h-full">
+                                </canvas>
+
+                                <div id="friendPlaceholder2"
+                                    class="absolute inset-0 flex flex-col items-center justify-center bg-zinc-100">
+
+                                    <div class="text-4xl">❤️</div>
+
+                                    <p class="mt-2 text-sm text-zinc-700">
+                                        Waiting
+                                    </p>
+
+                                    <p class="text-xs text-zinc-500">
+                                        for Shot
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- ========================= -->
+                    <!-- FRAME 3 -->
+                    <!-- ========================= -->
+
+                    <div class="p-3 border-b border-zinc-800">
+
+                        <div class="relative grid grid-cols-2 overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900">
+
+                            <div class="relative aspect-[4/5] overflow-hidden border-r border-zinc-800">
+
+                                <video id="myVideo3"
+                                    autoplay
+                                    playsinline
+                                    muted
+                                    class="absolute inset-0 w-full h-full object-cover hidden">
+                                </video>
+
+                                <canvas id="myCanvas3"
+                                    class="absolute inset-0 hidden w-full h-full">
+                                </canvas>
+
+                                <div id="myPlaceholder3"
+                                    class="absolute inset-0 flex flex-col items-center justify-center bg-zinc-100">
+
+                                    <div class="text-4xl">📷</div>
+
+                                    <p class="mt-2 text-sm text-zinc-700">
+                                        Waiting
+                                    </p>
+
+                                    <p class="text-xs text-zinc-500">
+                                        for Shot
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                            <div class="relative aspect-[4/5] overflow-hidden">
+
+                                <video id="friendVideo3"
+                                    autoplay
+                                    playsinline
+                                    class="absolute inset-0 w-full h-full object-cover hidden">
+                                </video>
+
+                                <canvas id="friendCanvas3"
+                                    class="absolute inset-0 hidden w-full h-full">
+                                </canvas>
+
+                                <div id="friendPlaceholder3"
+                                    class="absolute inset-0 flex flex-col items-center justify-center bg-zinc-100">
+
+                                    <div class="text-4xl">❤️</div>
+
+                                    <p class="mt-2 text-sm text-zinc-700">
+                                        Waiting
+                                    </p>
+
+                                    <p class="text-xs text-zinc-500">
+                                        for Shot
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- ========================= -->
+                    <!-- FRAME 4 -->
+                    <!-- ========================= -->
+
+                    <div class="p-3">
+
+                        <div class="relative grid grid-cols-2 overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900">
+
+                            <div class="relative aspect-[4/5] overflow-hidden border-r border-zinc-800">
+
+                                <video id="myVideo4"
+                                    autoplay
+                                    playsinline
+                                    muted
+                                    class="absolute inset-0 w-full h-full object-cover hidden">
+                                </video>
+
+                                <canvas id="myCanvas4"
+                                    class="absolute inset-0 hidden w-full h-full">
+                                </canvas>
+
+                                <div id="myPlaceholder4"
+                                    class="absolute inset-0 flex flex-col items-center justify-center bg-zinc-100">
+
+                                    <div class="text-4xl">📷</div>
+
+                                    <p class="mt-2 text-sm text-zinc-700">
+                                        Waiting
+                                    </p>
+
+                                    <p class="text-xs text-zinc-500">
+                                        for Shot
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                            <div class="relative aspect-[4/5] overflow-hidden">
+
+                                <video id="friendVideo4"
+                                    autoplay
+                                    playsinline
+                                    class="absolute inset-0 w-full h-full object-cover hidden">
+                                </video>
+
+                                <canvas id="friendCanvas4"
+                                    class="absolute inset-0 hidden w-full h-full">
+                                </canvas>
+
+                                <div id="friendPlaceholder4"
+                                    class="absolute inset-0 flex flex-col items-center justify-center bg-zinc-100">
+
+                                    <div class="text-4xl">❤️</div>
+
+                                    <p class="mt-2 text-sm text-zinc-700">
+                                        Waiting
+                                    </p>
+
+                                    <p class="text-xs text-zinc-500">
+                                        for Shot
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+                        <!-- ========================= -->
+            <!-- SETTINGS PANEL -->
+            <!-- ========================= -->
+
+            <section>
+
+                <div class="bg-white rounded-[32px] shadow-xl p-8 sticky top-8">
+
+                    <h2 class="text-3xl font-bold mb-8">
+                        Settings
+                    </h2>
+
+                    <!-- Theme -->
+
+                    <div class="mb-8">
+
+                        <h3 class="text-lg font-semibold mb-3">
+                            Theme
+                        </h3>
+
+                        <div class="grid grid-cols-2 gap-3">
+
+                            <button id="themeMinimal"
+                                class="theme-btn rounded-2xl border-2 border-blue-500 bg-blue-50 py-4 transition">
+
+                                ✨ Minimal
+
+                            </button>
+
+                            <button id="themePastel"
+                                class="theme-btn rounded-2xl border py-4 transition hover:bg-zinc-50">
+
+                                🌸 Pastel
+
+                            </button>
+
+                            <button id="themeVintage"
+                                class="theme-btn rounded-2xl border py-4 transition hover:bg-zinc-50">
+
+                                📼 Vintage
+
+                            </button>
+
+                            <button id="themeDark"
+                                class="theme-btn rounded-2xl border py-4 transition hover:bg-zinc-50">
+
+                                🌙 Dark
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Filter -->
+
+                    <div class="mb-8">
+
+                        <h3 class="text-lg font-semibold mb-3">
+                            Filter
+                        </h3>
+
+                        <div class="grid grid-cols-2 gap-3">
+
+                            <button id="filterNormal"
+                                class="rounded-xl border-2 border-blue-500 bg-blue-50 py-3">
+
+                                Normal
+
+                            </button>
+
+                            <button id="filterBW"
+                                class="rounded-xl border py-3">
+
+                                B & W
+
+                            </button>
+
+                            <button id="filterSepia"
+                                class="rounded-xl border py-3">
+
+                                Sepia
+
+                            </button>
+
+                            <button id="filterVintage"
+                                class="rounded-xl border py-3">
+
+                                Vintage
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Number of Photos -->
+
+                    <div class="mb-8">
+
+                        <h3 class="text-lg font-semibold mb-3">
+                            Number of Photos
+                        </h3>
+
+                        <div class="grid grid-cols-4 gap-3">
+
+                            <button id="photos2"
+                                class="rounded-xl border py-3">
+
+                                2
+
+                            </button>
+
+                            <button id="photos4"
+                                class="rounded-xl border-2 border-blue-500 bg-blue-50 py-3">
+
+                                4
+
+                            </button>
+
+                            <button id="photos6"
+                                class="rounded-xl border py-3">
+
+                                6
+
+                            </button>
+
+                            <button id="photos8"
+                                class="rounded-xl border py-3">
+
+                                8
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Countdown -->
+
+                    <div class="mb-10">
+
+                        <h3 class="text-lg font-semibold mb-3">
+                            Countdown
+                        </h3>
+
+                        <div class="grid grid-cols-3 gap-3">
+
+                            <button id="count3"
+                                class="rounded-xl border-2 border-blue-500 bg-blue-50 py-3">
+
+                                3s
+
+                            </button>
+
+                            <button id="count5"
+                                class="rounded-xl border py-3">
+
+                                5s
+
+                            </button>
+
+                            <button id="count10"
+                                class="rounded-xl border py-3">
+
+                                10s
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Start -->
+
+                    <button id="startSession"
+                        class="w-full rounded-2xl bg-gradient-to-r from-[#007AFF] to-[#6A5CFF] py-5 text-lg font-semibold text-white shadow-xl transition hover:scale-[1.02]">
+
+                        ✨ Start Memories
+
+                    </button>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+        <!-- ========================= -->
+    <!-- FOOTER -->
+    <!-- ========================= -->
+
+    <footer
+        class="max-w-7xl mx-auto px-8 py-8 text-center text-zinc-500 text-sm">
+
+        Made with ❤️ using Boothly
+
+    </footer>
+
+    <!-- ========================= -->
+    <!-- COUNTDOWN -->
+    <!-- ========================= -->
+
+    <div
+        id="countdownOverlay"
+        class="fixed inset-0 hidden items-center justify-center bg-black/75 backdrop-blur-sm z-50">
+
+        <h1
+            id="countdownNumber"
+            class="text-white text-[10rem] font-black select-none">
+
+            3
+
+        </h1>
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- CAMERA FLASH -->
+    <!-- ========================= -->
+
+    <div
+        id="cameraFlash"
+        class="fixed inset-0 bg-white opacity-0 pointer-events-none z-[60] transition-opacity duration-150">
+    </div>
+
+    <!-- ========================= -->
+    <!-- LOADING -->
+    <!-- ========================= -->
+
+    <div
+        id="loadingOverlay"
+        class="fixed inset-0 hidden items-center justify-center bg-white/80 backdrop-blur-md z-40">
+
+        <div class="text-center">
+
+            <div
+                class="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto">
+            </div>
+
+            <p
+                class="mt-6 text-lg font-semibold text-zinc-700">
+
+                Connecting Booth...
+
+            </p>
+
+        </div>
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- SOCKET.IO -->
+    <!-- ========================= -->
+
+
+    <!-- ========================= -->
+    <!-- JAVASCRIPT -->
+    <!-- ========================= -->
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script src="js/utils.js"></script>
+
+<script src="js/camera.js"></script>
+
+<script src="js/webrtc.js"></script>
+
+<script src="js/socket.js"></script>
+
+<script src="js/countdown.js"></script>
+
+<script src="js/capture.js"></script>
+
+</body>
+
+</html>

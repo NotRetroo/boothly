@@ -1,0 +1,84 @@
+/* ==========================================
+   FILM STRIP HOLES
+========================================== */
+
+.film-strip{
+    position:relative;
+}
+
+.film-strip::before,
+.film-strip::after{
+
+    content:"";
+
+    position:absolute;
+
+    top:18px;
+    bottom:18px;
+
+    width:10px;
+
+    z-index:100;
+
+    background:
+    radial-gradient(circle,#fff 5px,transparent 5px);
+
+    background-size:10px 58px;
+
+    background-repeat:repeat-y;
+
+}
+
+.film-strip::before{
+
+    left:-5px;
+
+}
+
+.film-strip::after{
+
+    right:-5px;
+
+}
+/* ================================
+   FILM STRIP HOLES
+================================ */
+
+section:first-child > div{
+    position: relative;
+}
+
+section:first-child > div::before,
+section:first-child > div::after{
+
+    content:"";
+
+    position:absolute;
+
+    top:18px;
+    bottom:18px;
+
+    width:10px;
+
+    z-index:100;
+
+    background:
+    radial-gradient(circle,#fff 5px,transparent 5px);
+
+    background-size:10px 58px;
+
+    background-repeat:repeat-y;
+
+}
+
+section:first-child > div::before{
+
+    left:-5px;
+
+}
+
+section:first-child > div::after{
+
+    right:-5px;
+
+}
