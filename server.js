@@ -372,7 +372,9 @@ io.on("connection", (socket) => {
         maybeStartSignaling(room);
     });
 
-    socket.on("client:camera-ready", (_, ack) => {
+    socket.on("client:camera-ready", (payloadOrAck, maybeAck) => {
+        const ack = typeof payloadOrAck === "function" ? payloadOrAck : maybeAck;
+
         console.log("[server] client:camera-ready received", {
             socketId: socket.id
         });
@@ -398,7 +400,9 @@ io.on("connection", (socket) => {
         maybeStartSignaling(room);
     });
 
-    socket.on("client:peer-ready", (_, ack) => {
+    socket.on("client:peer-ready", (payloadOrAck, maybeAck) => {
+        const ack = typeof payloadOrAck === "function" ? payloadOrAck : maybeAck;
+
         console.log("[server] client:peer-ready received", {
             socketId: socket.id
         });
