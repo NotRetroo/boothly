@@ -174,7 +174,7 @@
                 return false;
             }
 
-            window.location.href = "download.html";
+            window.location.href = "/download.html";
             return true;
         } catch (error) {
             console.error(error);

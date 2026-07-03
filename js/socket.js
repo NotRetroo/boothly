@@ -10,6 +10,7 @@ const session = {
 };
 
 const startSessionButton = document.getElementById("startSession");
+let hasStartedDownloadHandoff = false;
 
 function readSession() {
     const params = new URLSearchParams(window.location.search);
@@ -46,6 +47,18 @@ function updateState(state) {
     const canStart = isHost && (state.status === "ready" || state.status === "completed");
 
     setStartEnabled(canStart);
+}
+
+async function handleRoomState(state) {
+    updateState(state);
+
+    if (state.status !== "completed" || hasStartedDownloadHandoff) return;
+
+    hasStartedDownloadHandoff = true;
+
+    if (typeof window.BoothlyDownloader?.storeCapturedImagesAndRedirect === "function") {
+        await window.BoothlyDownloader.storeCapturedImagesAndRedirect();
+    }
 }
 
 async function authenticate() {
@@ -197,7 +210,7 @@ function bindSettingsControls() {
 
 socket.on("connect", authenticate);
 
-socket.on("room:state", updateState);
+socket.on("room:state", handleRoomState);
 
 socket.on("room:expired", () => {
     alert("This room has expired.");
@@ -238,18 +251,19 @@ socket.on("signal:ice", async ({ candidate }) => {
 
     await handleRemoteIceCandidate(candidate);
 });
-
 socket.on("session:countdown", ({ shotIndex, captureAt }) => {
     if (typeof runScheduledCountdown === "function") {
         runScheduledCountdown({
             shotIndex,
             captureAt,
+
             onCapture: () => {
                 socket.emit("session:capture-ack", { shotIndex });
             }
         });
     }
 });
+
 
 if (startSessionButton) {
     setStartEnabled(false);
