@@ -372,7 +372,7 @@ io.on("connection", (socket) => {
         maybeStartSignaling(room);
     });
 
-    socket.on("client:camera-ready", (ack) => {
+    socket.on("client:camera-ready", (_, ack) => {
         console.log("[server] client:camera-ready received", {
             socketId: socket.id
         });
@@ -398,11 +398,13 @@ io.on("connection", (socket) => {
         maybeStartSignaling(room);
     });
 
-    socket.on("client:peer-ready", (ack) => {
+    socket.on("client:peer-ready", (_, ack) => {
         console.log("[server] client:peer-ready received", {
             socketId: socket.id
         });
-
+git add .
+git commit -m "Fix Socket.IO acknowledgement"
+git push
         const session = getSocketSession(socket);
         if (!session) return ack?.({ ok: false, error: "Not authenticated." });
 
