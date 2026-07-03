@@ -34,14 +34,21 @@ async function ensurePeerConnection() {
     }
 
     peerConnection = new RTCPeerConnection(rtcConfiguration);
+    console.log("[webrtc] RTCPeerConnection created");
 
     if (localStream) {
+        console.log("[webrtc] adding local tracks", {
+            trackCount: localStream.getTracks().length
+        });
+
         localStream.getTracks().forEach((track) => {
             peerConnection.addTrack(track, localStream);
         });
     }
 
     peerConnection.ontrack = (event) => {
+        console.log("[webrtc] ontrack fired", event);
+
         const [remoteStream] = event.streams;
 
         friendVideos.forEach((video, index) => {
@@ -54,6 +61,8 @@ async function ensurePeerConnection() {
 
     peerConnection.onicecandidate = (event) => {
         if (!event.candidate) return;
+        console.log("[webrtc] ICE sent candidate generated", event.candidate);
+
         if (typeof emitIceCandidate === "function") {
             emitIceCandidate(event.candidate);
         }
@@ -69,11 +78,18 @@ async function ensurePeerConnection() {
 }
 
 async function beginSignaling({ shouldOffer }) {
+    console.log("[webrtc] beginSignaling", { shouldOffer });
+
     const connection = await ensurePeerConnection();
 
     if (shouldOffer) {
+        console.log("[webrtc] createOffer start");
+
         const offer = await connection.createOffer();
+        console.log("[webrtc] createOffer complete", offer);
+
         await connection.setLocalDescription(offer);
+        console.log("[webrtc] setLocalDescription offer complete", connection.localDescription);
 
         if (typeof emitOffer === "function") {
             emitOffer(connection.localDescription);
@@ -82,14 +98,25 @@ async function beginSignaling({ shouldOffer }) {
 }
 
 async function handleRemoteOffer(description) {
+    console.log("[webrtc] handleRemoteOffer", description);
+
     const connection = await ensurePeerConnection();
 
+    console.log("[webrtc] setRemoteDescription offer start");
+
     await connection.setRemoteDescription(new RTCSessionDescription(description));
+    console.log("[webrtc] setRemoteDescription offer complete");
+
     remoteDescriptionReady = true;
     await flushPendingIceCandidates();
 
+    console.log("[webrtc] createAnswer start");
+
     const answer = await connection.createAnswer();
+    console.log("[webrtc] createAnswer complete", answer);
+
     await connection.setLocalDescription(answer);
+    console.log("[webrtc] setLocalDescription answer complete", connection.localDescription);
 
     if (typeof emitAnswer === "function") {
         emitAnswer(connection.localDescription);
@@ -97,14 +124,26 @@ async function handleRemoteOffer(description) {
 }
 
 async function handleRemoteAnswer(description) {
+    console.log("[webrtc] handleRemoteAnswer", description);
+
     if (!peerConnection) return;
 
+    console.log("[webrtc] setRemoteDescription answer start");
+
     await peerConnection.setRemoteDescription(new RTCSessionDescription(description));
+    console.log("[webrtc] setRemoteDescription answer complete");
+
     remoteDescriptionReady = true;
     await flushPendingIceCandidates();
 }
 
 async function handleRemoteIceCandidate(candidate) {
+    console.log("[webrtc] ICE received handleRemoteIceCandidate", {
+        candidate,
+        hasPeerConnection: Boolean(peerConnection),
+        remoteDescriptionReady
+    });
+
     if (!candidate) return;
 
     if (!peerConnection || !remoteDescriptionReady) {
@@ -113,6 +152,7 @@ async function handleRemoteIceCandidate(candidate) {
     }
 
     await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+    console.log("[webrtc] ICE received addIceCandidate complete");
 }
 
 async function flushPendingIceCandidates() {
@@ -121,6 +161,7 @@ async function flushPendingIceCandidates() {
     while (pendingIceCandidates.length) {
         const candidate = pendingIceCandidates.shift();
         await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+        console.log("[webrtc] ICE received queued addIceCandidate complete");
     }
 }
 

@@ -201,6 +201,12 @@ function maybeStartSignaling(room) {
     room.status = "signaling";
     emitRoomState(room);
 
+    console.log("[server] signal:begin emitting", {
+        room: room.code,
+        hostSocketId: room.host.socketId,
+        guestSocketId: room.guest.socketId
+    });
+
     io.to(room.host.socketId).emit("signal:begin", { polite: false, role: "host" });
     io.to(room.guest.socketId).emit("signal:begin", { polite: true, role: "guest" });
 }
@@ -220,7 +226,20 @@ function completeCaptureIfReady(room) {
 }
 
 io.on("connection", (socket) => {
+    console.log("[server] socket connected", socket.id);
+
+    socket.onAny((event, ...args) => {
+        const payload = args
+            .filter((arg) => typeof arg !== "function")
+            .map((arg) => JSON.stringify(arg))
+            .join(" ");
+
+        console.log(`[server:onAny] ${socket.id} -> ${event}`, payload);
+    });
+
     socket.on("room:create", ({ name } = {}, ack) => {
+        console.log("[server] room:create received", { socketId: socket.id, name });
+
         const displayName = sanitizeName(name);
 
         if (!displayName) {
@@ -257,10 +276,21 @@ io.on("connection", (socket) => {
         rooms.set(code, room);
         scheduleExpiry(room);
 
+        console.log("[server] room:create success", {
+            room: code,
+            hostParticipantId: host.id
+        });
+
         ack?.({ ok: true, credentials: issueCredentials(room, host) });
     });
 
     socket.on("room:join", ({ room: code, name } = {}, ack) => {
+        console.log("[server] room:join received", {
+            socketId: socket.id,
+            room: code,
+            name
+        });
+
         const room = findRoom(code);
         const displayName = sanitizeName(name);
 
@@ -283,11 +313,22 @@ io.on("connection", (socket) => {
         room.guest = guest;
         room.status = "paired";
 
+        console.log("[server] room:join success", {
+            room: room.code,
+            guestParticipantId: guest.id
+        });
+
         ack?.({ ok: true, credentials: issueCredentials(room, guest) });
         emitRoomState(room);
     });
 
     socket.on("room:authenticate", (payload = {}, ack) => {
+        console.log("[server] room:authenticate received", {
+            socketId: socket.id,
+            room: payload.room,
+            participantId: payload.participantId
+        });
+
         const result = validateSession(socket, payload);
 
         if (result.error) {
@@ -314,6 +355,13 @@ io.on("connection", (socket) => {
             role: participant.role
         });
 
+        console.log("[server] room:authenticate success", {
+            socketId: socket.id,
+            room: room.code,
+            participantId: participant.id,
+            role: participant.role
+        });
+
         ack?.({
             ok: true,
             role: participant.role,
@@ -325,6 +373,10 @@ io.on("connection", (socket) => {
     });
 
     socket.on("client:camera-ready", (ack) => {
+        console.log("[server] client:camera-ready received", {
+            socketId: socket.id
+        });
+
         const session = getSocketSession(socket);
         if (!session) return ack?.({ ok: false, error: "Not authenticated." });
 
@@ -336,11 +388,21 @@ io.on("connection", (socket) => {
         participant.lastSeenAt = now();
         ack?.({ ok: true });
 
+        console.log("[server] client:camera-ready success", {
+            room: room.code,
+            role: session.role,
+            participantId: participant.id
+        });
+
         emitRoomState(room);
         maybeStartSignaling(room);
     });
 
     socket.on("client:peer-ready", (ack) => {
+        console.log("[server] client:peer-ready received", {
+            socketId: socket.id
+        });
+
         const session = getSocketSession(socket);
         if (!session) return ack?.({ ok: false, error: "Not authenticated." });
 
@@ -352,11 +414,19 @@ io.on("connection", (socket) => {
         participant.lastSeenAt = now();
         ack?.({ ok: true });
 
+        console.log("[server] client:peer-ready success", {
+            room: room.code,
+            role: session.role,
+            participantId: participant.id
+        });
+
         emitRoomState(room);
         maybeStartSignaling(room);
     });
 
     socket.on("signal:offer", ({ description } = {}) => {
+        console.log("[server] signal:offer received", { socketId: socket.id });
+
         const session = getSocketSession(socket);
         if (!session) return;
 
@@ -367,6 +437,12 @@ io.on("connection", (socket) => {
         if (!room || !participant || !partner?.socketId) return;
         if (room.status !== "signaling" && room.status !== "ready") return;
 
+        console.log("[server] signal:offer forwarding", {
+            room: room.code,
+            from: participant.id,
+            toSocketId: partner.socketId
+        });
+
         io.to(partner.socketId).emit("signal:offer", {
             from: participant.id,
             description
@@ -374,6 +450,8 @@ io.on("connection", (socket) => {
     });
 
     socket.on("signal:answer", ({ description } = {}) => {
+        console.log("[server] signal:answer received", { socketId: socket.id });
+
         const session = getSocketSession(socket);
         if (!session) return;
 
@@ -385,6 +463,12 @@ io.on("connection", (socket) => {
         if (room.status !== "signaling" && room.status !== "ready") return;
 
         room.status = "ready";
+        console.log("[server] signal:answer forwarding", {
+            room: room.code,
+            from: participant.id,
+            toSocketId: partner.socketId
+        });
+
         io.to(partner.socketId).emit("signal:answer", {
             from: participant.id,
             description
@@ -393,6 +477,11 @@ io.on("connection", (socket) => {
     });
 
     socket.on("signal:ice", ({ candidate } = {}) => {
+        console.log("[server] signal:ice received", {
+            socketId: socket.id,
+            hasCandidate: Boolean(candidate)
+        });
+
         const session = getSocketSession(socket);
         if (!session) return;
 
@@ -401,6 +490,12 @@ io.on("connection", (socket) => {
         const partner = room ? getPartner(room, session.role) : null;
 
         if (!room || !participant || !partner?.socketId) return;
+
+        console.log("[server] signal:ice forwarding", {
+            room: room.code,
+            from: participant.id,
+            toSocketId: partner.socketId
+        });
 
         io.to(partner.socketId).emit("signal:ice", {
             from: participant.id,

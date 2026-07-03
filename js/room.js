@@ -48,7 +48,11 @@ createBtn.addEventListener("click", async () => {
 
     setBusy(true);
 
+    console.log("[room] emit room:create", { name });
+
     const response = await request("room:create", { name });
+
+    console.log("[room] ack room:create", response);
 
     setBusy(false);
 
@@ -76,10 +80,14 @@ joinBtn.addEventListener("click", async () => {
 
     setBusy(true);
 
+    console.log("[room] emit room:join", { room, name });
+
     const response = await request("room:join", {
         room,
         name
     });
+
+    console.log("[room] ack room:join", response);
 
     setBusy(false);
 

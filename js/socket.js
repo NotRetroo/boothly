@@ -52,11 +52,18 @@ async function authenticate() {
         return;
     }
 
+    console.log("[socket] emit room:authenticate", {
+        room: session.room,
+        participantId: session.participantId
+    });
+
     const response = await request("room:authenticate", {
         room: session.room,
         participantId: session.participantId,
         token: session.token
     });
+
+    console.log("[socket] ack room:authenticate", response);
 
     if (!response?.ok) {
         alert(response?.error || "Could not reconnect to the room.");
@@ -73,24 +80,34 @@ async function authenticate() {
         await waitForCamera();
     }
 
+    console.log("[socket] emit client:camera-ready");
+
     await request("client:camera-ready");
 
     if (typeof ensurePeerConnection === "function") {
         await ensurePeerConnection();
     }
 
+    console.log("[socket] emit client:peer-ready");
+
     await request("client:peer-ready");
 }
 
 function emitOffer(description) {
+    console.log("[socket] emit signal:offer", { description });
+
     socket.emit("signal:offer", { description });
 }
 
 function emitAnswer(description) {
+    console.log("[socket] emit signal:answer", { description });
+
     socket.emit("signal:answer", { description });
 }
 
 function emitIceCandidate(candidate) {
+    console.log("[socket] ICE sent signal:ice", { candidate });
+
     socket.emit("signal:ice", { candidate });
 }
 
@@ -126,20 +143,28 @@ socket.on("partner:left", () => {
 });
 
 socket.on("signal:begin", async ({ role }) => {
+    console.log("[socket] received signal:begin", { role });
+
     await beginSignaling({
         shouldOffer: role === "host"
     });
 });
 
 socket.on("signal:offer", async ({ description }) => {
+    console.log("[socket] received signal:offer", { description });
+
     await handleRemoteOffer(description);
 });
 
 socket.on("signal:answer", async ({ description }) => {
+    console.log("[socket] received signal:answer", { description });
+
     await handleRemoteAnswer(description);
 });
 
 socket.on("signal:ice", async ({ candidate }) => {
+    console.log("[socket] ICE received signal:ice", { candidate });
+
     await handleRemoteIceCandidate(candidate);
 });
 
